@@ -19,14 +19,16 @@ class Human(BaseModel):
     class Meta:
         abstract = True
 
+class Qualification(BaseModel):
+    name = models.CharField(max_length=255, default='', blank=True)
+    level = models.CharField(max_length=255, choices=GLOBALS.QUALIFICATION_LEVEL_CHOICES, default=GLOBALS.UNDEFINED_LEVEL)
+
 class Personnel(Human):
     owner = models.ForeignKey(Customer, on_delete=models.PROTECT)
     identity = models.CharField(max_length=255, default='', blank=True)
     role = models.CharField(max_length=255, choices=GLOBALS.PERSONNEL_ROLE_CHOICES, default=GLOBALS.UNDEFINED_ROLE)
+    qualifications = models.ManyToManyField(Qualification)
 
-class Qualification(BaseModel):
-    name = models.CharField(max_length=255, default='', blank=True)
-    level = models.CharField(max_length=255, choices=GLOBALS.QUALIFICATION_LEVEL_CHOICES, default=GLOBALS.UNDEFINED_LEVEL)
 
 
 
@@ -64,9 +66,11 @@ class AssetCrossAssignment(BaseModel):
 
 
 
-class Trip(Asset):
+class Trip(BaseModel):
 
     vehicle = models.ForeignKey(VehicleAsset, on_delete=models.PROTECT)
+
+    fleet = models.ForeignKey(VehicleAsset, on_delete=models.PROTECT)
 
     origin_lat_long = models.CharField(max_length=255, default='', blank=True)
     origin_address = models.CharField(max_length=255, default='', blank=True)
